@@ -1,25 +1,50 @@
+import { LunaDate, toStringKh } from '../calendar/LunaDate.js';
 
-// eslint-disable-next-line no-undef
-const g = getGlobal();
+function isExcel() {
+    return !!window.Excel;
+}
+function isWord() {
+    return !!window.Word;
+}
+function isPowerPoint() {
+    return !!window.PowerPoint;
+}
 
 async function addToday(args) {
-    console.log('hi from command.');
-    console.log('getGlobal: ', g);
-
-    try {
-        await window.Excel.run(async (context) => {
-            const range = context.workbook.getSelectedRange();
-            range.format.fill.color = "yellow";
-            await context.sync();
-        });
-    } catch (error) {
-        // Note: In a production add-in, notify the user through your add-in's UI.
-        console.error(error);
-    }
-
+    const date = new LunaDate().getDate();
+    const dateString = toStringKh(date);
+    await insertTextIntoDocument(dateString);
+    
     // Calling event.completed is required. event.completed lets the platform know that processing has completed.
     args.completed();
 }
 
+async function insertTextIntoDocument(dateString) {
+    try {
+        if (isWord()){
+            await window.Word.run(async (context) => {
+                const range = context.document.getSelection();
+                range.insertText(dateString, "replace");
+                await context.sync();
+            });
+        }
+        if (isExcel()){
+            await window.Excel.run(async (context) => {
+                const range = context.workbook.getSelectedRange();
+                range.values = [[dateString]];
+                await context.sync();
+            });
+        }
+        if (isPowerPoint()){
+            await window.Office.context.document.setSelectedDataAsync(dateString);
+            await window.Office.context.sync();
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
 
-window.Office.actions.associate('AddTodayButton', addToday);
+
+
+module.exports.addToday = addToday;
+module.exports.insertTextIntoDocument = insertTextIntoDocument;
