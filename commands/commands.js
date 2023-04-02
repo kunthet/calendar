@@ -10,7 +10,7 @@ function isPowerPoint() {
     return !!window.PowerPoint;
 }
 
-async function addToday(args) {
+export async function addToday(args) {
     const date = new LunaDate().getDate();
     const dateString = toStringKh(date);
     await insertTextIntoDocument(dateString);
@@ -19,7 +19,7 @@ async function addToday(args) {
     args.completed();
 }
 
-async function insertTextIntoDocument(dateString) {
+export async function insertTextIntoDocument(dateString) {
     try {
         if (isWord()){
             await window.Word.run(async (context) => {
@@ -46,5 +46,5 @@ async function insertTextIntoDocument(dateString) {
 
 
 
-module.exports.addToday = addToday;
-module.exports.insertTextIntoDocument = insertTextIntoDocument;
+// module.exports.addToday = addToday;
+// module.exports.insertTextIntoDocument = insertTextIntoDocument;
