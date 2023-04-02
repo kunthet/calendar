@@ -1,4 +1,4 @@
-import { LunaDate, toStringKh } from '../calendar/LunaDate.js';
+import { LunaDate, toStringKh, adToStringKh } from '../calendar/LunaDate.js';
 
 function isExcel() {
     return !!window.Excel;
@@ -12,8 +12,9 @@ function isPowerPoint() {
 
 export async function addToday(args) {
     const date = new LunaDate().getDate();
-    const dateString = toStringKh(date);
-    await insertTextIntoDocument(dateString);
+    const luna = toStringKh(date);
+    const sola = adToStringKh(date);
+    await insertTextIntoDocument(`${luna}\n${sola}`);
     
     // Calling event.completed is required. event.completed lets the platform know that processing has completed.
     args.completed();
